@@ -12,24 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Show repo structure
+      - name: Find all Rust files
         run: |
-          echo "=== ROOT ==="
-          ls -la
-          echo "=== anitrax-contract ==="
-          ls -la anitrax-contract/
-          echo "=== anitrax-contract/src ==="
-          ls -la anitrax-contract/src/
-          echo "=== anitrax-contract/src/bin ==="
-          ls -la anitrax-contract/src/bin/ || echo "NO BIN FOLDER"
+          echo "=== All Cargo.toml files ==="
+          find . -name "Cargo.toml"
+          echo "=== All lib.rs files ==="
+          find . -name "lib.rs"
+          echo "=== All build.rs files ==="
+          find . -name "build.rs"
+          echo "=== Full tree ==="
+          find . -not -path './.git/*' | head -50
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-
-      - name: Install nightly toolchain
-        run: rustup toolchain install nightly-2026-01-01 --target wasm32-unknown-unknown
 
       - name: Install cargo-odra
         run: cargo install cargo-odra
