@@ -2,6 +2,9 @@ name: Deploy ANITRAX Contract to Casper Testnet
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -19,10 +22,6 @@ jobs:
 
       - name: Install cargo-odra
         run: cargo install cargo-odra
-
-      - name: Install odra-build dependency
-        working-directory: anitrax-contract
-        run: cargo add --build odra-build@2.8.2
 
       - name: Build WASM
         working-directory: anitrax-contract
