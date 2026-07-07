@@ -9,7 +9,6 @@
 [![AI](https://img.shields.io/badge/AI-Gemini-orange?logo=google)](https://ai.google.dev)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
----
 
 ## 🌐 Links
 
