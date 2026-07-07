@@ -9,8 +9,14 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: anitrax-contract
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
@@ -21,24 +27,28 @@ jobs:
       - name: Install cargo-odra
         run: cargo install cargo-odra
 
-      - name: Build WASM
+      - name: Build contract
         run: |
-          cd anitrax-contract
-          cargo +nightly-2026-01-01 build --target wasm32-unknown-unknown --bin anitrax_contract_build_contract --release --features build-contract
+          cargo +nightly-2026-01-01 build \
+            --target wasm32-unknown-unknown \
+            --bin anitrax_contract_build_contract \
+            --release \
+            --features build-contract
 
-      - name: Install casper-client
+      - name: Install Casper Client
         run: cargo install casper-client
 
       - name: Deploy to Casper Testnet
         env:
           SECRET_KEY: ${{ secrets.CASPER_SECRET_KEY }}
         run: |
-          echo "$SECRET_KEY" > /tmp/secret_key.pem
-          chmod 600 /tmp/secret_key.pem
+          echo "$SECRET_KEY" > secret_key.pem
+          chmod 600 secret_key.pem
+
           casper-client put-deploy \
-            --node-address http://65.21.235.219:7777 \
+            --node-address https://node.testnet.casper.network/rpc \
             --chain-name casper-test \
-            --secret-key /tmp/secret_key.pem \
-            --session-path anitrax-contract/target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
+            --secret-key secret_key.pem \
+            --session-path target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
             --payment-amount 200000000000 \
             --ttl 30min
