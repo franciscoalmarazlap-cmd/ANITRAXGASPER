@@ -12,6 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Show repo structure
+        run: |
+          echo "=== ROOT ==="
+          ls -la
+          echo "=== anitrax-contract ==="
+          ls -la anitrax-contract/
+          echo "=== anitrax-contract/src ==="
+          ls -la anitrax-contract/src/
+          echo "=== anitrax-contract/src/bin ==="
+          ls -la anitrax-contract/src/bin/ || echo "NO BIN FOLDER"
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -24,14 +35,14 @@ jobs:
         run: cargo install cargo-odra
 
       - name: Build WASM
-        working-directory: anitrax-contract
-        run: cargo build --target wasm32-unknown-unknown --bin anitrax_contract_build_contract --release --features build-contract
+        run: |
+          cd anitrax-contract
+          cargo build --target wasm32-unknown-unknown --bin anitrax_contract_build_contract --release --features build-contract
 
       - name: Install casper-client
         run: cargo install casper-client
 
       - name: Deploy to Casper Testnet
-        working-directory: anitrax-contract
         env:
           SECRET_KEY: ${{ secrets.CASPER_SECRET_KEY }}
         run: |
@@ -41,6 +52,6 @@ jobs:
             --node-address http://65.21.235.219:7777 \
             --chain-name casper-test \
             --secret-key /tmp/secret_key.pem \
-            --session-path target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
+            --session-path anitrax-contract/target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
             --payment-amount 200000000000 \
             --ttl 30min
