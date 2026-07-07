@@ -1,1 +1,47 @@
+name: Deploy ANITRAX Contract to Casper Testnet
 
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install nightly toolchain
+        run: rustup toolchain install nightly-2026-01-01 --target wasm32-unknown-unknown
+
+      - name: Install cargo-odra
+        run: cargo install cargo-odra
+
+      - name: Install odra-build dependency
+        working-directory: anitrax-contract
+        run: cargo add --build odra-build@2.8.2
+
+      - name: Build WASM
+        working-directory: anitrax-contract
+        run: cargo build --target wasm32-unknown-unknown --bin anitrax_contract_build_contract --release --features build-contract
+
+      - name: Install casper-client
+        run: cargo install casper-client
+
+      - name: Deploy to Casper Testnet
+        working-directory: anitrax-contract
+        env:
+          SECRET_KEY: ${{ secrets.CASPER_SECRET_KEY }}
+        run: |
+          echo "$SECRET_KEY" > /tmp/secret_key.pem
+          chmod 600 /tmp/secret_key.pem
+          casper-client put-deploy \
+            --node-address http://65.21.235.219:7777 \
+            --chain-name casper-test \
+            --secret-key /tmp/secret_key.pem \
+            --session-path target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
+            --payment-amount 200000000000 \
+            --ttl 30min
