@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "${{ secrets.SECRET_KEY }}" > secret_key.pem
           
-          casper-client put-transaction \
+          casper-client send-transaction \
             --node-address http://95.216.67.162:7777 \
             --chain-name casper-test \
             --secret-key secret_key.pem \
