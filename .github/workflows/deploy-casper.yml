@@ -29,13 +29,19 @@ jobs:
       - name: Install casper-client
         run: cargo install casper-client
 
+      - name: Check account status
+        run: |
+          curl -s -X POST https://node.testnet.casper.network/rpc \
+            -H "Content-Type: application/json" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"chain_get_block","params":{}}' | head -c 200
+
       - name: Deploy to Casper Testnet
         env:
           SECRET_KEY: ${{ secrets.CASPER_SECRET_KEY }}
         run: |
           echo "$SECRET_KEY" > /tmp/secret_key.pem
           chmod 600 /tmp/secret_key.pem
-          casper-client put-deploy \
+          casper-client put-transaction session \
             --node-address https://node.testnet.casper.network \
             --chain-name casper-test \
             --secret-key /tmp/secret_key.pem \
