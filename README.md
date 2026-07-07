@@ -19,7 +19,7 @@
 | 🟠 Wallet Casper Testnet | https://testnet.cspr.live/account/02021ece4a3a164adff5b5a1a6614c451dd562783e6ede022cd79d088a63cd66d37f |
 | ⛓ Contrato Ethereum Sepolia | https://sepolia.etherscan.io/address/0x29f4e6B5Fcb0Ce294eA20bEcd7a7900C7E4e771F |
 | 🎥 Demo en YouTube | https://youtu.be/QVREoHfyEoE?si=tzbN9HhUlUpzwUVQ |
-| 🔗 Repositorio | https://github.com/franciscoalmarazlap-cmd/anitrax-zk.github.com |
+| 🔗 Repositorio | https://github.com/franciscoalmarazlap-cmd/ANITRAXGASPER/tree/ANITRAX.github.io |
 
 ---
 
