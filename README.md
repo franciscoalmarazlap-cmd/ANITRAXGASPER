@@ -281,7 +281,7 @@ ngrok http 8001
 
  📄 Licencia
 
-MIT License — Copyright (c) 2026 Francisco Almaraz Ocelo
+MIT License solo para participar en el hacketon — Copyright (c) 2026 Francisco Almaraz Ocelo
 
 
 ANITRAX es una aplicación funcional desarrollada para el Casper Agentic Buildathon 2026.
