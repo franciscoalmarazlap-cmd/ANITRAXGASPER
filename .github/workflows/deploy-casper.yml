@@ -12,20 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Find all Rust files
-        run: |
-          echo "=== All Cargo.toml files ==="
-          find . -name "Cargo.toml"
-          echo "=== All lib.rs files ==="
-          find . -name "lib.rs"
-          echo "=== All build.rs files ==="
-          find . -name "build.rs"
-          echo "=== Full tree ==="
-          find . -not -path './.git/*' | head -50
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
         with:
+          toolchain: nightly-2026-01-01
           targets: wasm32-unknown-unknown
 
       - name: Install cargo-odra
@@ -34,7 +24,7 @@ jobs:
       - name: Build WASM
         run: |
           cd anitrax-contract
-          cargo build --target wasm32-unknown-unknown --bin anitrax_contract_build_contract --release --features build-contract
+          cargo +nightly-2026-01-01 build --target wasm32-unknown-unknown --bin anitrax_contract_build_contract --release --features build-contract
 
       - name: Install casper-client
         run: cargo install casper-client
