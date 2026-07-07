@@ -29,7 +29,7 @@ jobs:
       - name: Install casper-client
         run: cargo install casper-client
 
-      - name: Check account status
+      - name: Check node status
         run: |
           curl -s -X POST https://node.testnet.casper.network/rpc \
             -H "Content-Type: application/json" \
@@ -45,6 +45,7 @@ jobs:
             --node-address https://node.testnet.casper.network \
             --chain-name casper-test \
             --secret-key /tmp/secret_key.pem \
-            --session-path anitrax-contract/target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
+            --wasm-path anitrax-contract/target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
+            --gas-price-tolerance 3 \
             --payment-amount 200000000000 \
             --ttl 30min
