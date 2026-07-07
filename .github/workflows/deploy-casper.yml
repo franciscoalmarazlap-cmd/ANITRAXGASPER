@@ -2,51 +2,46 @@ name: Deploy ANITRAX Contract to Casper Testnet
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: anitrax-contract
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install Rust nightly
-        uses: dtolnay/rust-toolchain@nightly
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: nightly-2026-01-01
-          targets: wasm32-unknown-unknown
-
-      - name: Install cargo-odra
-        run: cargo install cargo-odra
-
-      - name: Build Contract
-        run: cargo +nightly-2026-01-01 build \
-          --target wasm32-unknown-unknown \
-          --bin anitrax_contract_build_contract \
-          --release \
-          --features build-contract
+          target: wasm32-unknown-unknown
 
       - name: Install Casper Client
-        run: cargo install casper-client
+        run: |
+          cargo install casper-client
 
-      - name: Deploy
+      - name: Build ANITRAX Contract
+        run: |
+          cargo +nightly-2026-01-01 build --target wasm32-unknown-unknown --bin anitrax_contract_build_contract --release --features build-contract
+
+      - name: Prepare Secret Key
         env:
           SECRET_KEY: ${{ secrets.CASPER_SECRET_KEY }}
         run: |
           echo "$SECRET_KEY" > secret_key.pem
           chmod 600 secret_key.pem
 
+      - name: Check files
+        run: |
+          ls -la
+          ls -la target/wasm32-unknown-unknown/release
+
+      - name: Deploy Contract
+        run: |
           casper-client put-deploy \
-            --node-address https://rpc.testnet.casper.network/rpc \
-            --chain-name casper-test \
-            --secret-key secret_key.pem \
-            --session-path target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
-            --payment-amount 200000000000 \
-            --ttl 30min
+          --node-address https://node.testnet.casper.network:7777 \
+          --chain-name casper-test \
+          --secret-key secret_key.pem \
+          --session-path target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
+          --payment-amount 3000000000
