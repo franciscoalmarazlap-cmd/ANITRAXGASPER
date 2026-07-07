@@ -45,12 +45,8 @@ jobs:
             --node-address https://node.testnet.casper.network \
             --chain-name casper-test \
             --secret-key /tmp/secret_key.pem \
-            --transaction-path anitrax-contract/target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
-            --category install-upgrade \
+            --wasm-path anitrax-contract/target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
+            --transaction-runtime vm-casper-v1 \
             --gas-price-tolerance 3 \
             --payment-amount 200000000000 \
             --ttl 30min
-
-      - name: Show deploy result
-        if: success()
-        run: echo "Contract deployed successfully to Casper Testnet!"
