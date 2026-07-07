@@ -29,12 +29,6 @@ jobs:
       - name: Install casper-client
         run: cargo install casper-client
 
-      - name: Check node status
-        run: |
-          curl -s -X POST https://node.testnet.casper.network/rpc \
-            -H "Content-Type: application/json" \
-            -d '{"jsonrpc":"2.0","id":1,"method":"chain_get_block","params":{}}' | head -c 300
-
       - name: Deploy to Casper Testnet
         env:
           SECRET_KEY: ${{ secrets.CASPER_SECRET_KEY }}
@@ -47,7 +41,7 @@ jobs:
             --secret-key /tmp/secret_key.pem \
             --wasm-path anitrax-contract/target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
             --transaction-runtime vm-casper-v1 \
-            --gas-price-tolerance 3 \
+            --standard-payment true \
             --payment-amount 200000000000 \
-            --standard-payment \
+            --gas-price-tolerance 3 \
             --ttl 30min
