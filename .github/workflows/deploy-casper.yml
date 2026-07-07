@@ -1,54 +1,44 @@
-name: Deploy ANITRAX Contract to Casper Testnet
+name: Deploy Contract to Casper Testnet
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: anitrax-contract
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Rust nightly
-        uses: dtolnay/rust-toolchain@nightly
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly-2026-01-01
-          targets: wasm32-unknown-unknown
-
-      - name: Install cargo-odra
-        run: cargo install cargo-odra
-
-      - name: Build contract
-        run: |
-          cargo +nightly-2026-01-01 build \
-            --target wasm32-unknown-unknown \
-            --bin anitrax_contract_build_contract \
-            --release \
-            --features build-contract
+          toolchain: stable
+          target: wasm32-unknown-unknown
 
       - name: Install Casper Client
-        run: cargo install casper-client
-
-      - name: Deploy to Casper Testnet
-        env:
-          SECRET_KEY: ${{ secrets.CASPER_SECRET_KEY }}
         run: |
-          echo "$SECRET_KEY" > secret_key.pem
-          chmod 600 secret_key.pem
+          cargo install casper-client --locked
 
-          casper-client put-deploy \
-            --node-address https://node.testnet.casper.network/rpc \
+      - name: Build Smart Contract
+        run: |
+          cargo build --release --target wasm32-unknown-unknown
+
+      - name: Deploy Contract
+        run: |
+          echo "${{ secrets.SECRET_KEY }}" > secret_key.pem
+          
+          casper-client put-transaction \
+            --node-address http://95.216.67.162:7777 \
             --chain-name casper-test \
             --secret-key secret_key.pem \
-            --session-path target/wasm32-unknown-unknown/release/anitrax_contract_build_contract.wasm \
-            --payment-amount 200000000000 \
-            --ttl 30min
+            --payment-amount 50000000000 \
+            --session-path target/wasm32-unknown-unknown/release/anitraxgasper.wasm
+
+      - name: Clean up keys
+        if: always()
+        run: rm -f secret_key.pem
